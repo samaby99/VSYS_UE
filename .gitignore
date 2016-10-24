@@ -1,0 +1,11 @@
+# excluding everything for whitelisting
+*
+
+# include directories
+!*/
+
+#include file-types
+!**/*.c
+!**/*.cpp
+!**/*.h
+!**/Makefile
