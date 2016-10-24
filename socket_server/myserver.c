@@ -76,7 +76,8 @@ int put_file(int socket, char *DL_dir, char *filename)
     char path_and_file[BUF];
 
     dir = opendir(DL_dir);
-    if(!dir)
+
+    if(!dir) // check if download-directory exists; if not, create one
     {
         mkdir(DL_dir, S_IRWXU); // permissions: read, write, execute/search by owner
         dir = opendir(DL_dir);
@@ -84,9 +85,10 @@ int put_file(int socket, char *DL_dir, char *filename)
             perror("File access error - could not create Downloads-directory\n");
         return EXIT_FAILURE;
     }
-    sprintf(path_and_file, "%s/%s", DL_dir, filename);
 
-    if(access(path_and_file, W_OK) == 0)
+    sprintf(path_and_file, "%s/%s", DL_dir, filename); // combine path and filename
+
+    if(access(path_and_file, W_OK) == 0) // check if file to write already exists
     {
         printf("File access error - \"%s\" already exists.\n", path_and_file);
         return EXIT_FAILURE;
@@ -94,8 +96,8 @@ int put_file(int socket, char *DL_dir, char *filename)
 
     send(socket, "OK", 2, 0);
     file = fopen(path_and_file, "w");
-    printf("opened file %s\n", path_and_file);
-    fwrite("testtext", sizeof(char), 8, file);
+    printf("opened file %s\n", path_and_file); // debug
+    fwrite("test-text", sizeof(char), 8, file);
 
     fclose(file);
 
@@ -117,7 +119,7 @@ int put_file(int socket, char *DL_dir, char *filename)
 
 void signal_handler(int sig_num)
 {
-    printf("Program aborted! Closing Socket...");
+    printf("Interrupt! Server terminating! Closing Socket...");
     if (close (create_socket) == 0)
         printf("OK!\n");
     else
